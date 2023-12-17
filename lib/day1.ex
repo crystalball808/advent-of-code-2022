@@ -30,7 +30,7 @@ defmodule Day1 do
 
   @spec words_to_digits(String.t()) :: String.t()
   def words_to_digits(line) do
-    Regex.scan(~r/(?=(\d|one|two|three|four|five|six|seven|eight|nine|))/, line)
+    Regex.scan(~r/(?=(\d|one|two|three|four|five|six|seven|eight|nine))/, line)
     |> List.flatten()
     |> Enum.map(&number_to_digit/1)
     |> Enum.join("")
