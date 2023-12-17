@@ -9,6 +9,49 @@ defmodule Day1 do
     |> Enum.sum()
   end
 
+  def part_two do
+    {:ok, content} = File.read("input1")
+
+    content
+    |> String.trim()
+    |> String.split("\n")
+    |> Enum.map(&calibrate_value_p2/1)
+    |> Enum.sum()
+    |> IO.puts()
+  end
+
+  @spec calibrate_value_p2(String.t()) :: integer()
+  def calibrate_value_p2(line) do
+    line
+    |> words_to_digits()
+    |> keep_first_and_last()
+    |> String.to_integer()
+  end
+
+  @spec words_to_digits(String.t()) :: String.t()
+  def words_to_digits(line) do
+    Regex.scan(~r/(?=(\d|one|two|three|four|five|six|seven|eight|nine|))/, line)
+    |> List.flatten()
+    |> Enum.map(&number_to_digit/1)
+    |> Enum.join("")
+  end
+
+  @spec number_to_digit(String.t()) :: String.t()
+  def number_to_digit(number) do
+    case number do
+      "one" -> "1"
+      "two" -> "2"
+      "three" -> "3"
+      "four" -> "4"
+      "five" -> "5"
+      "six" -> "6"
+      "seven" -> "7"
+      "eight" -> "8"
+      "nine" -> "9"
+      other -> other
+    end
+  end
+
   @spec calibrate_value(String.t()) :: integer()
   def calibrate_value(line) do
     line
