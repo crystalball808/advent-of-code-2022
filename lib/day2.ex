@@ -43,6 +43,7 @@ defmodule Day2 do
     if rem_rounds_count === 0 do
       true
     else
+      # 4 red, 1 green, 2 blue
       [round | rest] = remaining_rounds
 
       number_color_pairs =
