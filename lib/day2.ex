@@ -2,6 +2,7 @@ defmodule Day2 do
   @max_red 12
   @max_green 13
   @max_blue 14
+  @number_color_regex ~r/\d+\s(green|red|blue)/
 
   def part_one do
     {:ok, content} = File.read("input2")
@@ -14,15 +15,14 @@ defmodule Day2 do
   end
 
   @spec keep_possible_game_ids(String.t(), [integer()]) :: [integer()]
-  @doc "Test doc"
-  def keep_possible_game_ids(line, acc) do
+  defp keep_possible_game_ids(line, acc) do
     # Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
     [game_name, game] = String.split(line, ":")
 
     is_possible =
       game
       |> String.split(";")
-      |> is_game_possible()
+      |> are_all_rounds_valid()
 
     if is_possible do
       id =
@@ -36,37 +36,31 @@ defmodule Day2 do
     end
   end
 
-  @spec is_game_possible([String.t()]) :: boolean()
-  def is_game_possible(remaining_rounds) do
-    rem_rounds_count = length(remaining_rounds)
+  # round looks similar to: 4 red, 1 green, 2 blue
+  @spec are_all_rounds_valid([String.t()]) :: boolean()
+  defp are_all_rounds_valid([]), do: true
 
-    if rem_rounds_count === 0 do
-      true
+  defp are_all_rounds_valid([round | rest]) do
+    number_color_pairs =
+      Regex.scan(@number_color_regex, round, capture: :first)
+      |> List.flatten()
+
+    if Enum.any?(number_color_pairs, &is_pair_invalid/1) do
+      false
     else
-      # 4 red, 1 green, 2 blue
-      [round | rest] = remaining_rounds
+      are_all_rounds_valid(rest)
+    end
+  end
 
-      number_color_pairs =
-        Regex.scan(~r/\d+\s(green|red|blue)/, round, capture: :first)
-        |> List.flatten()
+  @spec is_pair_invalid(String.t()) :: boolean()
+  defp is_pair_invalid(pair) do
+    [number, color] = String.split(pair, " ")
 
-      some_pair_unvalid =
-        Enum.any?(number_color_pairs, fn pair ->
-          [number, color] = String.split(pair, " ")
-
-          case color do
-            "red" -> String.to_integer(number) > @max_red
-            "green" -> String.to_integer(number) > @max_green
-            "blue" -> String.to_integer(number) > @max_blue
-            _ -> false
-          end
-        end)
-
-      if some_pair_unvalid do
-        false
-      else
-        is_game_possible(rest)
-      end
+    case color do
+      "red" -> String.to_integer(number) > @max_red
+      "green" -> String.to_integer(number) > @max_green
+      "blue" -> String.to_integer(number) > @max_blue
+      _ -> false
     end
   end
 end
