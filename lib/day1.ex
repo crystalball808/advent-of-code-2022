@@ -30,7 +30,10 @@ defmodule Day1 do
 
   @spec words_to_digits(String.t()) :: String.t()
   def words_to_digits(line) do
-    Regex.scan(~r/(?=(\d|one|two|three|four|five|six|seven|eight|nine))/, line)
+    # Find all occurrences of numbers either in digit or word representation
+    Regex.scan(~r/(?=(\d|one|two|three|four|five|six|seven|eight|nine))/, line,
+      capture: :all_but_first
+    )
     |> List.flatten()
     |> Enum.map(&number_to_digit/1)
     |> Enum.join("")
