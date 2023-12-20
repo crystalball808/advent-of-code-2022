@@ -63,4 +63,35 @@ defmodule Day2 do
       _ -> false
     end
   end
+
+  def part_two do
+    {:ok, content} = File.read("input2")
+
+    content
+    |> String.trim()
+    |> String.split("\n")
+    |> Enum.map(&get_power_of_game/1)
+    |> Enum.sum()
+  end
+
+  defp get_power_of_game(game) do
+    min_set =
+      Regex.scan(@number_color_regex, game, capture: :first)
+      |> List.flatten()
+      |> Enum.reduce(%{"red" => 0, "green" => 0, "blue" => 0}, &get_min_cubes/2)
+
+    Map.get(min_set, "red") * Map.get(min_set, "green") * Map.get(min_set, "blue")
+  end
+
+  defp get_min_cubes(number_color, acc) do
+    [number, color] = String.split(number_color, " ")
+
+    parsed_number = String.to_integer(number)
+
+    if parsed_number > Map.get(acc, color) do
+      Map.put(acc, color, parsed_number)
+    else
+      acc
+    end
+  end
 end
