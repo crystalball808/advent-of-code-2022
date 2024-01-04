@@ -4,7 +4,11 @@ defmodule Day3 do
 
     lines_with_index = content |> String.trim() |> String.split("\n") |> Enum.with_index()
 
-    part_coordinates = get_part_coordinates(lines_with_index)
+    is_part = fn <<grapheme>> ->
+      grapheme !== ?. and grapheme not in ?0..?9
+    end
+
+    part_coordinates = get_part_coordinates(lines_with_index, is_part)
 
     numbers_with_parts = get_numbers_with_parts(lines_with_index, part_coordinates)
 
@@ -51,28 +55,27 @@ defmodule Day3 do
     end
   end
 
-  def get_part_coordinates(lines_with_index, line_parts_map \\ %{})
-  def get_part_coordinates([], line_parts_map), do: line_parts_map
+  def get_part_coordinates(lines_with_index, condition, line_parts_map \\ %{})
+  def get_part_coordinates([], _condition, line_parts_map), do: line_parts_map
 
-  def get_part_coordinates([{line, index} | rest_lines], line_parts_map) do
-    indexes_of_parts = line |> get_indexes_of_parts()
+  def get_part_coordinates([{line, index} | rest_lines], condition, line_parts_map) do
+    indexes_of_parts = line |> get_indexes_of_parts(condition)
 
     if length(indexes_of_parts) > 0 do
       new_lines_map = Map.put(line_parts_map, index, indexes_of_parts)
 
-      get_part_coordinates(rest_lines, new_lines_map)
+      get_part_coordinates(rest_lines, condition, new_lines_map)
     else
-      get_part_coordinates(rest_lines, line_parts_map)
+      get_part_coordinates(rest_lines, condition, line_parts_map)
     end
   end
 
-  @spec get_indexes_of_parts(String.t()) :: [integer()]
-  defp get_indexes_of_parts(line) do
+  defp get_indexes_of_parts(line, condition) do
     line
     |> String.graphemes()
     |> Enum.with_index()
     |> Enum.reduce([], fn {grapheme, index}, acc ->
-      if is_part?(grapheme) do
+      if condition.(grapheme) do
         [index | acc]
       else
         acc
@@ -80,8 +83,19 @@ defmodule Day3 do
     end)
   end
 
-  @spec is_part?(String.t()) :: boolean()
-  defp is_part?(<<grapheme>>) do
-    grapheme !== ?. and grapheme not in ?0..?9
+  def part_two do
+    {:ok, content} = File.read("input3")
+
+    lines_with_index = content |> String.trim() |> String.split("\n") |> Enum.with_index()
+
+    is_gear = fn <<grapheme>> ->
+      grapheme === ?*
+    end
+
+    gear_coordinates = get_part_coordinates(lines_with_index, is_gear)
+
+    # gear_ratios = get_ratios_of_gears(lines_with_index, gear_coordinates)
+
+    # gear_ratios |> Enum.sum()
   end
 end
