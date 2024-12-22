@@ -22,7 +22,7 @@ pub fn main() {
       acc + int.absolute_value(pair.0 - pair.1)
     })
 
-  io.debug(res)
+  io.println("Day 1, first part: " <> int.to_string(res))
 
   Ok(Nil)
 }
