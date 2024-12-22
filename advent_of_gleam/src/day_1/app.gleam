@@ -9,9 +9,10 @@ const input_path = "src/day_1/test.txt"
 pub fn main() {
   let assert Ok(stream) = file_stream.open_read(input_path)
 
-  let location_ids = collect_location_ids(stream, #([], []))
+  let #(first_list, second_list) = collect_location_ids(stream, #([], []))
 
-  io.debug(location_ids)
+  io.debug(first_list)
+  io.debug(second_list)
 }
 
 type Lists =
@@ -20,6 +21,7 @@ type Lists =
 fn collect_location_ids(stream: file_stream.FileStream, acc: Lists) -> Lists {
   case file_stream.read_line(stream) {
     Ok(line) -> {
+      io.print(line)
       let assert Ok(#(first_number, second_number)) = parse_line(line)
 
       let new_acc = #([first_number, ..acc.0], [second_number, ..acc.1])
