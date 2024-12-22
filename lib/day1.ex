@@ -1,4 +1,10 @@
 defmodule Day1 do
+  def foo do
+    File.stream!("input1", :line)
+    |> Stream.map(&String.trim/1)
+    |> Stream.filter(&(byte_size(&1) > 0))
+  end
+
   def part_one do
     {:ok, content} = File.read("input1")
 
@@ -35,8 +41,7 @@ defmodule Day1 do
       capture: :all_but_first
     )
     |> List.flatten()
-    |> Enum.map(&number_to_digit/1)
-    |> Enum.join("")
+    |> Enum.map_join("", &number_to_digit/1)
   end
 
   @spec number_to_digit(String.t()) :: String.t()
