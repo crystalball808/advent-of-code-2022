@@ -44,7 +44,7 @@ fn collect_location_ids(stream: file_stream.FileStream, acc: Lists) -> Lists {
   }
 }
 
-/// Parse a line which should ressemble a pattern "X   Y"
+/// Parse a line that should resemble a pattern "X   Y"
 /// 
 /// ## Examples
 /// ```gleam
