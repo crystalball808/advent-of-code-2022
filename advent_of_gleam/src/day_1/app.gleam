@@ -1,4 +1,5 @@
 import file_streams/file_stream
+import gleam/dict
 import gleam/int
 import gleam/io
 import gleam/list
@@ -10,7 +11,53 @@ const input_path = "src/day_1/input.txt"
 pub fn main() {
   let assert Ok(stream) = file_stream.open_read(input_path)
 
-  let #(first_list, second_list) = collect_location_ids(stream, #([], []))
+  let lists = collect_location_ids(stream, #([], []))
+
+  let assert Ok(_) = first_part(lists)
+  let assert Ok(_) = second_part(lists)
+}
+
+type Lists =
+  #(List(Int), List(Int))
+
+fn second_part(lists: Lists) {
+  let #(first_list, second_list) = lists
+
+  let appearences =
+    second_list
+    |> list.fold(dict.new(), fn(acc, n) {
+      case dict.get(acc, n) {
+        Ok(appearence) -> {
+          acc
+          |> dict.insert(n, appearence + 1)
+        }
+        Error(_) -> {
+          acc
+          |> dict.insert(n, 1)
+        }
+      }
+    })
+
+  let res =
+    first_list
+    |> list.fold(0, fn(acc, n) {
+      io.println("The acc is " <> int.to_string(acc))
+      io.println("The number is " <> int.to_string(n))
+      let appearence =
+        dict.get(appearences, n)
+        |> result.unwrap(0)
+      io.println("Appearences: " <> int.to_string(appearence))
+      acc + n * appearence
+    })
+    |> int.to_string
+
+  io.println("Day 2, first part: " <> res)
+
+  Ok(Nil)
+}
+
+fn first_part(lists: Lists) {
+  let #(first_list, second_list) = lists
 
   let first_sorted = list.sort(first_list, by: int.compare)
   let second_sorted = list.sort(second_list, by: int.compare)
@@ -21,14 +68,12 @@ pub fn main() {
     list.fold(zipped, 0, fn(acc, pair) {
       acc + int.absolute_value(pair.0 - pair.1)
     })
+    |> int.to_string
 
-  io.println("Day 1, first part: " <> int.to_string(res))
+  io.println("Day 1, first part: " <> res)
 
   Ok(Nil)
 }
-
-type Lists =
-  #(List(Int), List(Int))
 
 fn collect_location_ids(stream: file_stream.FileStream, acc: Lists) -> Lists {
   case file_stream.read_line(stream) {
