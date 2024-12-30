@@ -41,12 +41,10 @@ fn second_part(lists: Lists) {
   let res =
     first_list
     |> list.fold(0, fn(acc, n) {
-      io.println("The acc is " <> int.to_string(acc))
-      io.println("The number is " <> int.to_string(n))
       let appearence =
         dict.get(appearences, n)
         |> result.unwrap(0)
-      io.println("Appearences: " <> int.to_string(appearence))
+
       acc + n * appearence
     })
     |> int.to_string
